@@ -89,7 +89,9 @@ bool running = true;
         
         NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:pos attributes: attributes];
                 
-        [currentText drawAtPoint:NSMakePoint(0, 0)];
+        int posy = [self frame].size.height - [currentText size].height;
+        
+        [currentText drawAtPoint:NSMakePoint(0, posy)];
     }
 }
 @end
