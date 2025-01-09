@@ -11,3 +11,4 @@ are not received any more by the main window.
 
 Here is a video of this:
 
+https://github.com/user-attachments/assets/d3462ffc-7632-4f03-9cd4-ea6be23b5b51
