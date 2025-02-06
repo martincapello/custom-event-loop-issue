@@ -1,10 +1,23 @@
 //
-// Custom event loop (failing) example
+// Custom event loop (fixed!) example
 //
 
 #include <Cocoa/Cocoa.h>
 
 bool running = true;
+
+@interface MyAppDelegate : NSObject
+- (void) applicationDidFinishLaunching:(NSNotification *) notification;
+@end
+
+@implementation MyAppDelegate
+
+- (void) applicationDidFinishLaunching:(NSNotification *) notification;
+{
+    [NSApp stop:nil];
+}
+
+@end
 
 @interface MyApplication : NSApplication
 - (void)myrun;
@@ -14,7 +27,10 @@ bool running = true;
 @implementation MyApplication
 - (void)myrun
 {
-    [self finishLaunching];
+    id appDelegate = [[MyAppDelegate alloc] init];
+    [self setDelegate:appDelegate];
+        
+    [self run];
 
     do {
         @autoreleasepool {
@@ -44,7 +60,6 @@ bool running = true;
     }
     else {
         NSLog(@"n: %ld, type: %d, wins: %@", (long)event.windowNumber, event.type, wins);
-
     }
   [super sendEvent:event];
 }
@@ -73,7 +88,6 @@ bool running = true;
 - (void)mouseMoved:(NSEvent*)event
 {
     self.pos = event.locationInWindow;
-    
     [super mouseMoved:event];
     [self setNeedsDisplay:YES];
 }
@@ -83,14 +97,10 @@ bool running = true;
     @autoreleasepool {
         //note we are using the convenience method, so we don't need to autorelease the object
         NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[NSFont fontWithName:@"Helvetica" size:26], NSFontAttributeName,[NSColor blackColor], NSForegroundColorAttributeName, nil];
-        
         NSString *pos = [NSString stringWithFormat:@"x: %1.2f, y: %1.2f",
                                                        self.pos.x, self.pos.y];
-        
         NSAttributedString * currentText=[[NSAttributedString alloc] initWithString:pos attributes: attributes];
-                
         int posy = [self frame].size.height - [currentText size].height;
-        
         [currentText drawAtPoint:NSMakePoint(0, posy)];
     }
 }
@@ -99,7 +109,7 @@ bool running = true;
 int main(int argc, const char * argv[]) {
     MyApplication* app = MyApplication.sharedApplication;
     app.ActivationPolicy = NSApplicationActivationPolicyRegular;
-     
+
     NSWindow* win = [NSWindow alloc];
     win.acceptsMouseMovedEvents = true;
         
@@ -111,7 +121,6 @@ int main(int argc, const char * argv[]) {
                                  backing:NSBackingStoreBuffered
                                    defer:NO
                                   screen:nsScreen];
-    
 
     MyView* view = [[MyView alloc] initWithFrame:contentRect];
     [view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
@@ -123,19 +132,13 @@ int main(int argc, const char * argv[]) {
     [view addTrackingArea:trackingArea];
 
     id delegate = [MyWindowDelegate alloc];
-    
     [win setDelegate: delegate];
-
     [win setContentView: view];
-    
     [win center];
-    
     [win makeKeyAndOrderFront:win];
-            
-    [app myrun];  // Why this doesn't work well in fullscreen mode?
-    
-    //[app run];  // If this line is used instead of the previous, it works as expected.
 
-    
+    [app myrun];
+
     return 0;
 }
+
